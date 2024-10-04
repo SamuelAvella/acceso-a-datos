@@ -39,16 +39,55 @@ export class DataInMemoryService<T extends Model> extends DataService<T>{
         
     }
     public override requestAll(): Observable<T[]> {
-        throw new Error('Method not implemented.');
+        return new Observable((observer) => {
+            observer.next(this._records.value)
+            observer.complete()
+        })
     }
+
     public override requestById(id: string): Observable<T | null> {
-        throw new Error('Method not implemented.');
+        return new Observable((observer) => {
+            const _records = this._records.value;
+            let idx = _records.findIndex(p=> p.id == id)
+            observer.next(_records[idx])
+            observer.complete()
+        })
     }
+
     public override update(id: string, value: T): Observable<T | null> {
-        throw new Error('Method not implemented.');
+        return new Observable((observer) => {
+            const _records = this._records.value;
+            let idx = _records.findIndex(p=> p.id == id)
+
+            if(idx && idx > 0){
+                _records[idx] = { ..._records[idx], ...value };
+                this._records.next(_records);
+                observer.next(_records[idx]);
+            } else {
+                observer.next(null)
+            }
+
+            observer.complete()
+            
+        })
     }
+
     public override delete(id: string): Observable<T | null> {
-        throw new Error('Method not implemented.');
+        return new Observable((observer) => {
+            const _records = this._records.value;
+            let idx = _records.findIndex(p=> p.id == id)
+
+            if(idx && idx > 0){
+                _records.slice(idx,1)
+                this._records.next(_records);
+                observer.next(_records[idx]);
+            } else {
+                observer.next(null)
+            }
+
+            observer.complete()
+            
+        })
     }
     
 
